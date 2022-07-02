@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::str::FromStr;
 use std::time::{SystemTime, UNIX_EPOCH};
 mod pre_compute;
 mod setup;
@@ -75,27 +74,16 @@ fn get_word_possibilities(
 ) -> HashSet<String> {
     let mut result: Option<HashSet<&str>> = None;
     for ch in y_chars {
-        let char_consonant = pre_compute::Consonant::from_str(&ch.to_string()).unwrap();
-        let char_words: HashSet<&str> = hash_to_ref(
-            words_data_struct
-                .consonant_map
-                .get(&char_consonant)
-                .clone()
-                .unwrap(),
-        );
+        let char_words: HashSet<&str> =
+            hash_to_ref(words_data_struct.consonant_map.get(&ch).clone().unwrap());
         result = match result {
             None => Some(char_words),
             Some(r) => Some(r.intersection(&char_words).cloned().collect()),
         };
     }
     for ch in g_chars {
-        let char_consonant = pre_compute::Consonant::from_str(&ch.to_string()).unwrap();
-        let char_words: HashSet<&str> = hash_to_ref(
-            words_data_struct
-                .consonant_map
-                .get(&char_consonant)
-                .unwrap(),
-        );
+        let char_words: HashSet<&str> =
+            hash_to_ref(words_data_struct.consonant_map.get(&ch).unwrap());
         result = match result {
             None => None,
             Some(r) => Some(r.difference(&char_words).cloned().collect()),
@@ -110,12 +98,8 @@ fn get_good_guess(
     word_ds: &pre_compute::WorDS,
 ) -> HashSet<String> {
     let chars: HashSet<char> = yellow_chars.union(grey_chars).cloned().collect();
-    let mut result: Option<HashSet<&str>> = Some(hash_to_ref(
-        word_ds
-            .consonant_map
-            .get(&pre_compute::Consonant::ALL)
-            .unwrap(),
-    ));
+    let mut result: Option<HashSet<&str>> =
+        Some(hash_to_ref(word_ds.consonant_map.get(&'0').unwrap()));
     match result {
         None => print!("None"),
         Some(ref r) => print!("{}\n", r.len()),
@@ -125,9 +109,7 @@ fn get_good_guess(
             None => print!("None"),
             Some(ref r) => print!("{} removal {}\n", &ch, r.len()),
         }
-        let char_consonant = pre_compute::Consonant::from_str(&ch.to_string()).unwrap();
-        let char_words: HashSet<&str> =
-            hash_to_ref(word_ds.consonant_map.get(&char_consonant).unwrap());
+        let char_words: HashSet<&str> = hash_to_ref(word_ds.consonant_map.get(&ch).unwrap());
         result = match result {
             None => None,
             Some(r) => Some(r.difference(&char_words).cloned().collect()),
