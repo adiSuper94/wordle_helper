@@ -14,10 +14,9 @@ pub fn get_all_five_letter_words() -> Vec<String> {
 }
 
 fn get_full_dict() -> Value {
-    let json_str: String = fs::read_to_string(
-        "/home/adisuper/Work/WordleHelper/wordle_helper/resource/words_dictionary.json",
-    )
-    .expect("Something went wrong wile reading the file.");
+    let json_str: String =
+        fs::read_to_string("/home/adisuper/dev/wordle_helper/resource/words_dictionary.json")
+            .expect("Something went wrong wile reading the file.");
     let result: Result<Value> = serde_json::from_str(&json_str);
     let dict: Value = match result {
         Ok(dictionary) => dictionary,

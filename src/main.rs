@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use std::str::FromStr;
-
+use std::time::{SystemTime, UNIX_EPOCH};
 mod pre_compute;
 mod setup;
 
@@ -10,37 +10,54 @@ fn main() {
 
     grey_chars.insert('b');
     grey_chars.insert('r');
-    grey_chars.insert('o');
-    grey_chars.insert('d');
+    grey_chars.insert('t');
     grey_chars.insert('s');
-
-    grey_chars.insert('c');
-    yellow_chars.insert('h');
-    grey_chars.insert('a');
-    yellow_chars.insert('l');
-    grey_chars.insert('k');
-
-    grey_chars.insert('v');
-    yellow_chars.insert('i');
-    grey_chars.insert('n');
+    grey_chars.insert('d');
     grey_chars.insert('e');
-    grey_chars.insert('w');
+    grey_chars.insert('m');
+    grey_chars.insert('o');
+    grey_chars.insert('k');
+    grey_chars.insert('e');
 
+    yellow_chars.insert('a');
+    yellow_chars.insert('n');
+    yellow_chars.insert('l');
+
+    let pre_compute_start = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis();
     let words: Vec<String> = setup::get_all_five_letter_words();
     let words_data_struct: pre_compute::WorDS = pre_compute::compute(words);
 
+    let start = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("ye to cheating hai")
+        .as_millis();
+    print!(" precomute time {}\n", start - pre_compute_start);
     let possibilities: HashSet<String> =
         get_word_possibilities(&yellow_chars, &grey_chars, &words_data_struct);
     print!("possibility#:: {}\n", possibilities.len());
     for possibility in possibilities {
         print!("possibility:: {}\n", possibility);
     }
+
+    let guess_start_time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("ye to cheating hai")
+        .as_millis();
+    print!(" comute time {}\n", guess_start_time - start);
     let good_guesses: HashSet<String> =
         get_good_guess(&yellow_chars, &grey_chars, &words_data_struct);
     print!("guess:: {}\n", good_guesses.len());
     for guess in good_guesses {
         print!("guess:: {}\n", guess);
     }
+    let end = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("ye to cheating hai")
+        .as_millis();
+    print!(" guess compute time {}\n", end - guess_start_time);
 }
 
 fn hash_to_ref(h: &HashSet<String>) -> HashSet<&str> {
