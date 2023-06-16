@@ -10,7 +10,7 @@ pub fn get_all_five_letter_words() -> Vec<String> {
             five_letter_words.push(key.to_string().to_lowercase())
         }
     }
-    return five_letter_words;
+    five_letter_words
 }
 
 fn get_full_dict() -> Value {
@@ -22,5 +22,5 @@ fn get_full_dict() -> Value {
         Ok(dictionary) => dictionary,
         Err(e) => panic!("Problem opening the file: {:?}", e),
     };
-    return dict;
+    dict
 }

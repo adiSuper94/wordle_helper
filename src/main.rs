@@ -7,21 +7,25 @@ fn main() {
     let mut yellow_chars: HashSet<char> = HashSet::new();
     let mut grey_chars: HashSet<char> = HashSet::new();
 
-    grey_chars.insert('b');
-    grey_chars.insert('r');
-    grey_chars.insert('t');
-    grey_chars.insert('s');
-    grey_chars.insert('d');
-    grey_chars.insert('e');
-    grey_chars.insert('m');
-    grey_chars.insert('o');
-    grey_chars.insert('k');
-    grey_chars.insert('e');
+    println!("Enter grey chars without space");
+    let grey_str: String = std::io::stdin().lines().next().unwrap().unwrap();
+    for grey_char in grey_str.chars() {
+        grey_chars.insert(grey_char);
+    }
 
-    yellow_chars.insert('a');
-    yellow_chars.insert('n');
-    yellow_chars.insert('l');
-
+    println!("Enter yellow chars without space");
+    let yellow_str: String = std::io::stdin().lines().next().unwrap().unwrap();
+    if yellow_str.len() > 5 {
+        println!("You entered more than 5 yellow chars considering only the first 5");
+    }
+    let mut i: u16 = 0;
+    for yellow_char in yellow_str.chars() {
+        i += 1;
+        if i > 5 {
+            break;
+        }
+        yellow_chars.insert(yellow_char);
+    }
     let pre_compute_start = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -33,30 +37,30 @@ fn main() {
         .duration_since(UNIX_EPOCH)
         .expect("ye to cheating hai")
         .as_millis();
-    print!(" precomute time {}\n", start - pre_compute_start);
+    println!(" precomute time {}", start - pre_compute_start);
     let possibilities: HashSet<String> =
         get_word_possibilities(&yellow_chars, &grey_chars, &words_data_struct);
-    print!("possibility#:: {}\n", possibilities.len());
+    println!("possibility#:: {}", possibilities.len());
     for possibility in possibilities {
-        print!("possibility:: {}\n", possibility);
+        println!("possibility:: {}", possibility);
     }
 
     let guess_start_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("ye to cheating hai")
         .as_millis();
-    print!(" comute time {}\n", guess_start_time - start);
+    println!(" comute time {}", guess_start_time - start);
     let good_guesses: HashSet<String> =
         get_good_guess(&yellow_chars, &grey_chars, &words_data_struct);
-    print!("guess:: {}\n", good_guesses.len());
+    println!("guess:: {}", good_guesses.len());
     for guess in good_guesses {
-        print!("guess:: {}\n", guess);
+        println!("guess:: {}", guess);
     }
     let end = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("ye to cheating hai")
         .as_millis();
-    print!(" guess compute time {}\n", end - guess_start_time);
+    println!(" guess compute time {}", end - guess_start_time);
 }
 
 fn hash_to_ref(h: &HashSet<String>) -> HashSet<&str> {
@@ -75,7 +79,7 @@ fn get_word_possibilities(
     let mut result: Option<HashSet<&str>> = None;
     for ch in y_chars {
         let char_words: HashSet<&str> =
-            hash_to_ref(words_data_struct.consonant_map.get(&ch).clone().unwrap());
+            hash_to_ref(words_data_struct.consonant_map.get(ch).unwrap());
         result = match result {
             None => Some(char_words),
             Some(r) => Some(r.intersection(&char_words).cloned().collect()),
@@ -83,13 +87,10 @@ fn get_word_possibilities(
     }
     for ch in g_chars {
         let char_words: HashSet<&str> =
-            hash_to_ref(words_data_struct.consonant_map.get(&ch).unwrap());
-        result = match result {
-            None => None,
-            Some(r) => Some(r.difference(&char_words).cloned().collect()),
-        };
+            hash_to_ref(words_data_struct.consonant_map.get(ch).unwrap());
+        result = result.map(|r| r.difference(&char_words).cloned().collect());
     }
-    return hash_to_string(result.unwrap());
+    hash_to_string(result.unwrap())
 }
 
 fn get_good_guess(
@@ -101,23 +102,20 @@ fn get_good_guess(
     let mut result: Option<HashSet<&str>> =
         Some(hash_to_ref(word_ds.consonant_map.get(&'0').unwrap()));
     match result {
-        None => print!("None"),
-        Some(ref r) => print!("{}\n", r.len()),
+        None => println!("None"),
+        Some(ref r) => println!("{}\n", r.len()),
     }
     for ch in chars {
         match result {
-            None => print!("None"),
-            Some(ref r) => print!("{} removal {}\n", &ch, r.len()),
+            None => println!("None"),
+            Some(ref r) => println!("{} removal {}\n", &ch, r.len()),
         }
         let char_words: HashSet<&str> = hash_to_ref(word_ds.consonant_map.get(&ch).unwrap());
-        result = match result {
-            None => None,
-            Some(r) => Some(r.difference(&char_words).cloned().collect()),
-        };
+        result = result.map(|r| r.difference(&char_words).cloned().collect());
     }
     match result {
-        None => print!("None"),
-        Some(ref r) => print!("now: {}\n", r.len()),
+        None => println!("None"),
+        Some(ref r) => println!("now: {}\n", r.len()),
     }
     match result {
         None => HashSet::new(),
